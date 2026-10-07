@@ -92,10 +92,10 @@ export default function Home() {
         <div className="relative mx-auto grid min-h-[min(820px,calc(100dvh-72px))] max-w-[1400px] grid-rows-[auto_1fr] px-4 sm:px-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:grid-rows-1">
           <div className="relative z-10 flex flex-col justify-center pb-6 pt-14 lg:py-20">
             <MarketsStatus />
-            <h1 className="type-display mt-6 text-[clamp(2.2rem,5.6vw,4.6rem)] text-ink">
+            <h1 className="type-serif mt-6 text-[clamp(2.9rem,6.6vw,5.6rem)] text-ink">
               The market,
               <br />
-              built around you.
+              <em className="type-serif-accent">built around you.</em>
             </h1>
             <p className="mt-6 max-w-[34rem] text-[1.05rem] leading-relaxed text-ink-2">
               MainStocks brings modern stock-market infrastructure into one intelligent trading experience. Explore

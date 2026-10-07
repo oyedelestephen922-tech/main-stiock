@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "@fontsource-variable/archivo/wdth.css";
+@import "@fontsource-variable/bodoni-moda/opsz.css";
+@import "@fontsource-variable/bodoni-moda/opsz-italic.css";
 
 /* ─────────────────────────────────────────────────────────────
    MainStocks design tokens
@@ -33,6 +35,9 @@
   --bright: #4db5ff; /* highlights, rising prices */
   --soft: #83c8ff; /* secondary text accents, logo sweep */
   --note: #83c8ff; /* demo/sample labels */
+  --serif-from: #f5f8fc;
+  --serif-mid: #83c8ff;
+  --serif-to: #4db5ff;
   --on-brand: #ffffff;
 
   /* market direction — direction is always also shown with a sign */
@@ -74,6 +79,9 @@
   --bright: #2997ff;
   --soft: #83c8ff;
   --note: #1a5fc2;
+  --serif-from: #0a2a55;
+  --serif-mid: #146ef5;
+  --serif-to: #2997ff;
   --on-brand: #ffffff;
 
   --up: #0b66d6;
@@ -180,6 +188,26 @@ body::before {
   letter-spacing: -0.025em;
   line-height: 0.95;
   text-transform: uppercase;
+}
+
+/* Editorial serif for the hero: high-contrast Bodoni, upright then italic. */
+.type-serif {
+  font-family: "Bodoni Moda Variable", "Bodoni 72", Didot, Georgia, serif;
+  font-weight: 420;
+  font-optical-sizing: auto;
+  letter-spacing: -0.018em;
+  line-height: 1;
+  text-wrap: balance;
+}
+.type-serif-accent {
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  padding-right: 0.08em; /* keep the italic overhang from clipping */
+  background: linear-gradient(100deg, var(--serif-from) 0%, var(--serif-mid) 42%, var(--serif-to) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .type-title {
