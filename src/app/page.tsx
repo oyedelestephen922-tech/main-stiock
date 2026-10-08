@@ -12,8 +12,9 @@ import { MarketList } from "@/components/markets/MarketList";
 import { DemoBadge, MarketsStatus } from "@/components/ui/Market";
 import { LoadingRows, StateMessage } from "@/components/ui/States";
 import { Icon, type IconName } from "@/components/ui/Icon";
-import { Footer } from "@/components/layout/Footer";
 import { MainToken } from "@/components/landing/MainToken";
+import { HeroContract } from "@/components/landing/HeroContract";
+import { Footer } from "@/components/layout/Footer";
 
 const STEPS = [
   {
@@ -101,6 +102,7 @@ export default function Home() {
               MainStocks brings modern stock-market infrastructure into one intelligent trading experience. Explore
               markets, analyze assets, and manage your positions through a clean, connected interface.
             </p>
+            <HeroContract address="0x799bddc837a4304c79276ac3069596e7fb091bbd" />
             <div className="mt-9 flex flex-wrap gap-3">
               <Link href="/markets" className="btn btn-primary min-h-12 px-6">
                 EXPLORE MARKETS

@@ -46,10 +46,10 @@ export const config = {
     usdc: optionalAddress(process.env.NEXT_PUBLIC_USDC_ADDRESS) || "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
   },
   mainToken: {
-    /** Official $MAIN contract address. Leave empty until it is live on Pons. */
-    address: optionalAddress(process.env.NEXT_PUBLIC_MAIN_TOKEN_ADDRESS),
-    chainName: clean(process.env.NEXT_PUBLIC_MAIN_TOKEN_CHAIN),
-    explorerUrl: clean(process.env.NEXT_PUBLIC_MAIN_TOKEN_EXPLORER_URL).replace(/\/$/, ""),
+    /** Official $MAIN contract address. */
+    address: optionalAddress(process.env.NEXT_PUBLIC_MAIN_TOKEN_ADDRESS) || "0x799bddc837a4304c79276ac3069596e7fb091bbd",
+    chainName: clean(process.env.NEXT_PUBLIC_MAIN_TOKEN_CHAIN) || "Robinhood Chain",
+    explorerUrl: clean(process.env.NEXT_PUBLIC_MAIN_TOKEN_EXPLORER_URL).replace(/\/$/, "") || "https://robinhoodchain.blockscout.com",
     ponsUrl: clean(process.env.NEXT_PUBLIC_MAIN_TOKEN_PONS_URL) || "https://www.ponsfamily.com/launchpad",
   },
   tradableTickers: rawTradable
