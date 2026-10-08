@@ -1,0 +1,64 @@
+{
+  "network": "Robinhood Chain Mainnet",
+  "chainId": 4663,
+  "usdg": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+  "oracle": "0xcfDAF410057Fa5B7280D3bbE75CE4F8543456F7E",
+  "drawdownRetire": "0x8cc8aaa7C5078a1a245F316be8284F20517D2Fb5",
+  "feeRouter": "0xF967Ef29C0F407193d9387e61B7f0417D4B158E3",
+  "keeper": "0x6b3e66d3e1c2235f927aa0865a8034eddde8816b",
+  "creditLines": {
+    "META": "0xba9E10d81dDc02cBEc82b2D45CFAF3ed34152C4C"
+  },
+  "wells": {
+    "TSLA": {
+      "name": "Tesla Well",
+      "symbol": "wTSLA",
+      "equityToken": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d",
+      "well": "0x49Bc6975D6F33f4b3cBA20d4aA0BAdC9cD1cbe10",
+      "position": "0xE6042a0492751b21D9b92C9FF74dA8c832303bE6"
+    },
+    "NVDA": {
+      "name": "NVIDIA Well",
+      "symbol": "wNVDA",
+      "equityToken": "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC",
+      "well": "0x670c650fFEDC2c0276D4570D69edd7935Dbb88ec",
+      "position": "0x424C11e90B20C12c64C7dF05c42d31869eAAb300"
+    },
+    "AAPL": {
+      "name": "Apple Well",
+      "symbol": "wAAPL",
+      "equityToken": "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9",
+      "well": "0x9de9737095E7DB2eF356cB973Ef81935b7dBBB78",
+      "position": "0x2d138572e37C8327293ACc949191bDE50Ed4067a"
+    },
+    "PLTR": {
+      "name": "Palantir Well",
+      "symbol": "wPLTR",
+      "equityToken": "0x894E1EC2D74FFE5AEF8Dc8A9e84686acCB964F2A",
+      "well": "0x05653dfC7576E6820B88222644518fd6914dEec3",
+      "position": "0xfd698EDeA539647A908FCe10a9047b6f1c9afb54"
+    },
+    "META": {
+      "name": "Meta Well",
+      "symbol": "wMETA",
+      "equityToken": "0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35",
+      "well": "0x31eb382b977498656709F10287b733bB84fb647b",
+      "position": "0xa141A73Fb300d9d90E3DB223a6eA6b27ce8F8248"
+    },
+    "GOOGL": {
+      "name": "Alphabet Well",
+      "symbol": "wGOOGL",
+      "equityToken": "0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3",
+      "well": "0x87aFb6693c780F2C39184ab9b7F6D509c5E6C4be",
+      "position": "0x350d8B1Ccb980c4D28798f4cbc21A812770adA10"
+    },
+    "SPY": {
+      "name": "SPDR S&P 500 Well",
+      "symbol": "wSPY",
+      "equityToken": "0x117cc2133c37B721F49dE2A7a74833232B3B4C0C",
+      "well": "0x6Eb1AD4671BBFDb18473C9b2532A0212B0e634f6",
+      "position": "0x4B29761FFE214cD8aceaFF6b59eD49e4c6e72001"
+    }
+  },
+  "deployedAt": "2026-10-08T12:31:39.330Z"
+}

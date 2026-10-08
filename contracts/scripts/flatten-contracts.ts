@@ -11,6 +11,11 @@ async function main() {
     { name: "StockOracle", path: "contracts/StockOracle.sol" },
     { name: "StockGainsUniswapRouter", path: "contracts/StockGainsUniswapRouter.sol" },
     { name: "StockGainsVault", path: "contracts/StockGainsVault.sol" },
+    { name: "StonkWell", path: "contracts/StonkWell.sol" },
+    { name: "StonkPosition", path: "contracts/StonkPosition.sol" },
+    { name: "StonkCreditLine", path: "contracts/StonkCreditLine.sol" },
+    { name: "StonkFeeRouter", path: "contracts/StonkFeeRouter.sol" },
+    { name: "StonkDrawdownRetire", path: "contracts/StonkDrawdownRetire.sol" },
   ];
 
   for (const c of contracts) {

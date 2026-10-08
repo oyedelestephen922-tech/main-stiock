@@ -70,6 +70,9 @@ async function main() {
   const deployedPath = path.resolve(__dirname, "../../src/lib/contracts/deployed-addresses.json");
   const deployed = JSON.parse(fs.readFileSync(deployedPath, "utf-8"));
 
+  const stonkwellPath = path.resolve(__dirname, "../../src/lib/contracts/deployed-stonkwell.json");
+  const stonkwell = fs.existsSync(stonkwellPath) ? JSON.parse(fs.readFileSync(stonkwellPath, "utf-8")) : null;
+
   const targets: Target[] = [
     {
       name: "StockOracle",
@@ -87,6 +90,42 @@ async function main() {
       contractIdentifier: "contracts/StockGainsVault.sol:StockGainsVault",
     },
   ];
+
+  if (stonkwell) {
+    if (stonkwell.drawdownRetire) {
+      targets.push({
+        name: "StonkDrawdownRetire",
+        address: stonkwell.drawdownRetire,
+        contractIdentifier: "contracts/StonkDrawdownRetire.sol:StonkDrawdownRetire",
+      });
+    }
+    if (stonkwell.feeRouter) {
+      targets.push({
+        name: "StonkFeeRouter",
+        address: stonkwell.feeRouter,
+        contractIdentifier: "contracts/StonkFeeRouter.sol:StonkFeeRouter",
+      });
+    }
+    if (stonkwell.creditLines?.META) {
+      targets.push({
+        name: "StonkCreditLine",
+        address: stonkwell.creditLines.META,
+        contractIdentifier: "contracts/StonkCreditLine.sol:StonkCreditLine",
+      });
+    }
+    for (const [ticker, item] of Object.entries<any>(stonkwell.wells || {})) {
+      targets.push({
+        name: `StonkWell_${ticker}`,
+        address: item.well,
+        contractIdentifier: "contracts/StonkWell.sol:StonkWell",
+      });
+      targets.push({
+        name: `StonkPosition_${ticker}`,
+        address: item.position,
+        contractIdentifier: "contracts/StonkPosition.sol:StonkPosition",
+      });
+    }
+  }
 
   for (const target of targets) {
     await verifyContract(target, buildInfo);
