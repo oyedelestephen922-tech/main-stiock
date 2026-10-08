@@ -16,11 +16,14 @@ const optionalAddress = (v: string | undefined) => {
 };
 
 const provider = clean(process.env.NEXT_PUBLIC_MARKET_DATA_PROVIDER) || "demo";
+/** "live" = the built-in /api/market routes (Alpaca keys on the server). "http" = your own API URL. */
+const marketApiUrl =
+  provider === "live" ? "/api/market" : clean(process.env.NEXT_PUBLIC_MARKET_API_URL).replace(/\/$/, "");
 
 export const config = {
   market: {
-    provider: (provider === "http" ? "http" : "demo") as "http" | "demo",
-    apiUrl: clean(process.env.NEXT_PUBLIC_MARKET_API_URL).replace(/\/$/, ""),
+    provider: (provider === "http" || provider === "live" ? provider : "demo") as "live" | "http" | "demo",
+    apiUrl: marketApiUrl,
   },
   positionsApiUrl: clean(process.env.NEXT_PUBLIC_POSITIONS_API_URL).replace(/\/$/, ""),
   activityApiUrl: clean(process.env.NEXT_PUBLIC_ACTIVITY_API_URL).replace(/\/$/, ""),

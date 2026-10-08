@@ -30,7 +30,8 @@ Other scripts: `npm run build`, `npm start`, `npm run lint`, `npm run typecheck`
 | Theme switcher, saved per browser | Working |
 | Wallet connect / disconnect, address, network, balance, wrong-network switch | Working (browser wallets; mobile wallets need a WalletConnect project ID) |
 | Search (`/` or Ctrl/⌘ K), watchlist (add, remove, reorder), local activity log | Working, stored in the browser |
-| Prices, charts, market statistics, market activity feed | **Demo data**, labelled "Demo data" everywhere it appears |
+| Prices, charts, market statistics | **Live** with Alpaca keys set; otherwise demo data, labelled "Demo data" everywhere it appears |
+| Market activity feed (other users' buys/sells) | Needs an activity source; shows an empty state in live mode |
 | "MARKETS ONLINE" indicator | Shown only when a live market API reports healthy |
 | Portfolio and positions | Needs a positions API. Without one, shows an honest "not available" state. An opt-in **sample portfolio** (clearly labelled) lets you preview the screens |
 | Trading (Review order → Confirm trade) | Order preview works. **Confirm is disabled** until a trading contract and its verified ABI are added |
@@ -40,10 +41,17 @@ Other scripts: `npm run build`, `npm start`, `npm run lint`, `npm run typecheck`
 
 All configuration is in environment variables, read in one place: `src/lib/config.ts`.
 
-**Market data** — set `NEXT_PUBLIC_MARKET_DATA_PROVIDER=http` and `NEXT_PUBLIC_MARKET_API_URL`.
-The endpoints and response shapes expected are documented at the top of
-`src/services/market/httpProvider.ts`. Keep vendor API keys on a server route, never in a
-`NEXT_PUBLIC_` variable.
+**Market data (live)** — MainStocks has built-in server routes (`/api/market/quotes`,
+`/api/market/history`, `/api/market/health`) powered by Alpaca's free market data plan:
+1. Create a free account at alpaca.markets and generate API keys.
+2. Set `NEXT_PUBLIC_MARKET_DATA_PROVIDER=live`, `ALPACA_API_KEY_ID` and `ALPACA_API_SECRET_KEY`.
+The keys are server-only and never reach the browser. Responses are cached on the server so
+traffic stays well inside the free rate limit. The free plan gives real-time prices from the
+IEX exchange; volume is hidden because IEX volume is only a slice of the whole market.
+
+To use a different provider instead, set `NEXT_PUBLIC_MARKET_DATA_PROVIDER=http` and
+`NEXT_PUBLIC_MARKET_API_URL`; the expected shapes are documented in
+`src/services/market/httpProvider.ts`.
 
 **Network** — leave `NEXT_PUBLIC_CHAIN_ID` empty for Ethereum mainnet + Sepolia, or fill in all
 chain variables to use another EVM chain (for example Robinhood Chain).

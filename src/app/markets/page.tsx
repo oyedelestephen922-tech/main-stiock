@@ -24,7 +24,9 @@ function applyCategory(cat: Category, quotes: Quote[], watch: string[]): Quote[]
     case "Indexes":
       return quotes.filter((q) => kind(q.ticker) === "index");
     case "Popular":
-      return [...quotes].sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0)).slice(0, 6);
+      return quotes.some((q) => q.volume != null)
+        ? [...quotes].sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0)).slice(0, 6)
+        : quotes.filter((q) => ["NVDA", "AAPL", "TSLA", "MSFT", "AMZN", "META"].includes(q.ticker));
     case "Top Gainers":
       return quotes.filter((q) => q.changePercent > 0).sort((a, b) => b.changePercent - a.changePercent);
     case "Top Losers":

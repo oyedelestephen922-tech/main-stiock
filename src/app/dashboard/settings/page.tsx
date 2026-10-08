@@ -101,8 +101,17 @@ export default function SettingsPage() {
           <h2 id="conn-h" className="type-title px-5 py-4 text-base">
             Connections
           </h2>
-          <Row title="Market data" description={isDemoMarketData ? "Using built-in demo data. Set NEXT_PUBLIC_MARKET_DATA_PROVIDER=http and an API URL to go live." : config.market.apiUrl}>
-            <Status ok={!isDemoMarketData}>{isDemoMarketData ? "Demo" : "Live API"}</Status>
+          <Row
+            title="Market data"
+            description={
+              isDemoMarketData
+                ? "Using built-in demo data. Set NEXT_PUBLIC_MARKET_DATA_PROVIDER=live and add Alpaca keys to go live."
+                : config.market.provider === "live"
+                  ? "Real-time prices from Alpaca (IEX), served through MainStocks."
+                  : config.market.apiUrl
+            }
+          >
+            <Status ok={!isDemoMarketData}>{isDemoMarketData ? "Demo" : "Live"}</Status>
           </Row>
           <Row title="Network" description={supportedChains.map((c) => `${c.name} (${c.id})`).join(", ")}>
             <Status ok>{primaryChain.name}</Status>
