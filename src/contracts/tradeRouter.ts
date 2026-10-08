@@ -1,30 +1,20 @@
 import type { Abi } from "viem";
 import { config } from "@/lib/config";
+import tradeRouterAbiJson from "./abi/tradeRouter.json";
+import { getTokenAddress } from "./deployed";
 
 /**
- * Trade router integration point.
- *
- * MainStocks does not ship a trading contract and does not guess at one.
- * To enable real trades:
- *
- *   1. Deploy and verify your router contract.
- *   2. Paste its verified ABI into src/contracts/abi/tradeRouter.json
- *      and import it below as `tradeRouterAbi`.
- *   3. Implement buildTradeCall() so it returns the exact function name
- *      and arguments your router expects.
- *   4. Set NEXT_PUBLIC_TRADE_ROUTER_ADDRESS and NEXT_PUBLIC_TRADABLE_TICKERS.
- *
- * Until all of that is done, the trade panel shows previews only and the
- * "Confirm trade" button stays disabled.
+ * Trade router integration point for Robinhood Chain Mainnet.
  */
-
-export const tradeRouterAbi: Abi = [];
+export const tradeRouterAbi = tradeRouterAbiJson as unknown as Abi;
 
 export interface TradeRequest {
   side: "buy" | "sell";
   ticker: string;
   amountUsd: number;
   minReceive: number;
+  shares?: number;
+  recipient?: `0x${string}`;
 }
 
 export interface TradeCall {
@@ -35,10 +25,42 @@ export interface TradeCall {
   value?: bigint;
 }
 
-/** Return the contract call for a trade, or null if it isn't implemented yet. */
-export function buildTradeCall(_request: TradeRequest): TradeCall | null {
-  void _request;
-  return null;
+/** Return the contract call for a trade, or null if it cannot be constructed. */
+export function buildTradeCall(request: TradeRequest): TradeCall | null {
+  const routerAddress = config.contracts.tradeRouter;
+  if (!routerAddress || tradeRouterAbi.length === 0) return null;
+
+  const stockAddress = getTokenAddress(request.ticker);
+  const usdcAddress = config.contracts.usdc;
+  if (!stockAddress || !usdcAddress) return null;
+
+  const recipient = request.recipient;
+  if (!recipient) return null;
+
+  if (request.side === "buy") {
+    // User pays USD (USDC 6 decimals), receives stock tokens (18 decimals)
+    const amountIn = BigInt(Math.max(1, Math.floor(request.amountUsd * 1e6)));
+    const amountOutMin = BigInt(Math.max(0, Math.floor(request.minReceive * 1e18)));
+
+    return {
+      address: routerAddress,
+      abi: tradeRouterAbi,
+      functionName: "swapExactTokensForTokens",
+      args: [amountIn, amountOutMin, usdcAddress, stockAddress, recipient],
+    };
+  } else {
+    // User pays stock tokens (18 decimals), receives USD (6 decimals)
+    const shares = request.shares ?? request.amountUsd;
+    const amountIn = BigInt(Math.max(1, Math.floor(shares * 1e18)));
+    const amountOutMin = BigInt(Math.max(0, Math.floor(request.minReceive * 1e6)));
+
+    return {
+      address: routerAddress,
+      abi: tradeRouterAbi,
+      functionName: "swapExactTokensForTokens",
+      args: [amountIn, amountOutMin, stockAddress, usdcAddress, recipient],
+    };
+  }
 }
 
 export type TradingStatus = { available: true } | { available: false; reason: string };
@@ -52,6 +74,9 @@ export function tradingStatus(ticker?: string): TradingStatus {
   }
   if (ticker && !config.tradableTickers.includes(ticker.toUpperCase())) {
     return { available: false, reason: `${ticker} is view-only on MainStocks for now.` };
+  }
+  if (ticker && !getTokenAddress(ticker)) {
+    return { available: false, reason: `No token contract mapped for ${ticker} on Robinhood Chain.` };
   }
   return { available: true };
 }

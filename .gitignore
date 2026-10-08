@@ -2,8 +2,16 @@ node_modules
 .next
 out
 .env
+.env.*
 .env.local
 .env*.local
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+
+# Contracts artifacts & cache
+contracts/artifacts
+contracts/cache
+contracts/typechain-types
+contracts/.env
+contracts/.env.*

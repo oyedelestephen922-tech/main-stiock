@@ -1,14 +1,14 @@
-"use client";
-
 import { useEffect, useMemo, useState } from "react";
-import { useAccount, useBalance, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import { formatUnits } from "viem";
+import { useAccount, useBalance, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { erc20Abi, formatUnits, maxUint256 } from "viem";
+import { config } from "@/lib/config";
 import { ASSETS, getAsset } from "@/lib/assets";
 import { formatNumber, formatUsd } from "@/lib/format";
 import { supportedChains } from "@/lib/wagmi";
 import { useQuote, isDemoProvider } from "@/hooks/useMarket";
 import { preferencesStore } from "@/services/stores";
 import { buildTradeCall, tradingStatus } from "@/contracts/tradeRouter";
+import { getTokenAddress } from "@/contracts/deployed";
 import { Modal } from "../ui/Modal";
 import { Icon } from "../ui/Icon";
 import { useToast } from "../ui/Toast";
@@ -195,6 +195,7 @@ export function TradePanel({ ticker: fixedTicker, onTickerChange }: { ticker?: s
         preview={preview}
         slippageBps={prefs.slippageBps}
         connected={isConnected && onSupportedChain}
+        userAddress={address}
       />
     </section>
   );
@@ -218,11 +219,62 @@ interface ReviewProps {
   preview: { pay: number; payLabel: string; receive: number; receiveLabel: string; min: string } | null;
   slippageBps: number;
   connected: boolean;
+  userAddress?: `0x${string}`;
 }
 
-function ReviewModal({ open, onClose, side, ticker, price, preview, slippageBps, connected }: ReviewProps) {
+function ReviewModal({ open, onClose, side, ticker, price, preview, slippageBps, connected, userAddress }: ReviewProps) {
   const toast = useToast();
   const status = tradingStatus(ticker);
+  const routerAddress = config.contracts.tradeRouter;
+  const tokenInAddress = side === "buy" ? config.contracts.usdc : getTokenAddress(ticker);
+  const tokenInSymbol = side === "buy" ? "USD" : ticker;
+
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
+    address: tokenInAddress,
+    abi: erc20Abi,
+    functionName: "allowance",
+    args: userAddress && routerAddress ? [userAddress, routerAddress] : undefined,
+    query: { enabled: !!userAddress && !!routerAddress && !!tokenInAddress },
+  });
+
+  const amountInRequired = useMemo(() => {
+    if (!preview) return 0n;
+    if (side === "buy") {
+      return BigInt(Math.max(1, Math.floor(preview.pay * 1e6)));
+    } else {
+      return BigInt(Math.max(1, Math.floor(preview.pay * 1e18)));
+    }
+  }, [preview, side]);
+
+  const needsApproval = allowance !== undefined && (allowance as bigint) < amountInRequired;
+
+  const [isApproving, setIsApproving] = useState(false);
+  const { writeContract: writeApprove, data: approveHash, isPending: isApprovePending, error: approveError } = useWriteContract();
+  const approveReceipt = useWaitForTransactionReceipt({ hash: approveHash });
+
+  useEffect(() => {
+    if (approveReceipt.isSuccess) {
+      setIsApproving(false);
+      refetchAllowance();
+      toast({ tone: "success", title: "Approved", description: `${tokenInSymbol} approved for trading.` });
+    }
+    if (approveReceipt.isError || approveError) {
+      setIsApproving(false);
+      toast({ tone: "error", title: "Approval failed", description: "Approval transaction was rejected or failed." });
+    }
+  }, [approveReceipt.isSuccess, approveReceipt.isError, approveError, refetchAllowance, tokenInSymbol, toast]);
+
+  const approve = () => {
+    if (!tokenInAddress || !routerAddress) return;
+    setIsApproving(true);
+    writeApprove({
+      address: tokenInAddress,
+      abi: erc20Abi,
+      functionName: "approve",
+      args: [routerAddress, maxUint256],
+    });
+  };
+
   const { writeContract, data: hash, isPending, reset, error: writeError } = useWriteContract();
   const receipt = useWaitForTransactionReceipt({ hash });
 
@@ -262,6 +314,8 @@ function ReviewModal({ open, onClose, side, ticker, price, preview, slippageBps,
       ticker,
       amountUsd: side === "buy" ? preview.pay : preview.receive,
       minReceive: preview.receive * (1 - slippageBps / 10_000),
+      shares: side === "sell" ? preview.pay : preview.receive,
+      recipient: userAddress,
     });
     if (!call) {
       toast({ tone: "error", title: "Trading isn't wired up yet", description: "No contract call is defined for this order." });
@@ -312,6 +366,16 @@ function ReviewModal({ open, onClose, side, ticker, price, preview, slippageBps,
               </>
             ) : !connected ? (
               <WalletButton block />
+            ) : needsApproval ? (
+              <button
+                className="btn btn-primary w-full"
+                disabled={isApproving || isApprovePending || Boolean(approveHash && approveReceipt.isLoading)}
+                onClick={approve}
+              >
+                {isApproving || isApprovePending || Boolean(approveHash && approveReceipt.isLoading)
+                  ? `APPROVING ${tokenInSymbol}…`
+                  : `APPROVE ${tokenInSymbol} TO TRADE`}
+              </button>
             ) : (
               <button className="btn btn-primary w-full" onClick={confirm}>
                 CONFIRM TRADE

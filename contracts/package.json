@@ -1,0 +1,22 @@
+{
+  "name": "mainstocks-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Smart contracts for MainStocks on Robinhood Chain Mainnet",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:mainnet": "hardhat run scripts/deploy-mainnet.ts --network robinhoodMainnet",
+    "check-balance": "hardhat run scripts/check-balance.ts --network robinhoodMainnet",
+    "keeper:mainnet": "hardhat run scripts/keeper.ts --network robinhoodMainnet",
+    "verify:mainnet": "ts-node scripts/verify-all.ts"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.10",
+    "typescript": "^5.5.4"
+  }
+}
+ 
